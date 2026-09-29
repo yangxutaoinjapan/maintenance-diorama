@@ -1,0 +1,190 @@
+{
+  "worker": {
+    "name": "maintenance-gate",
+    "compatibilityDate": "2026-09-01"
+  },
+  "routes": [
+    {
+      "pattern": "example.com/*",
+      "zone": "example.com"
+    },
+    {
+      "pattern": "*.example.com/*",
+      "zone": "example.com"
+    }
+  ],
+  "passHosts": [
+    "admin.example.com"
+  ],
+  "until": "2026-10-01T09:00:00Z",
+  "timeZone": {
+    "id": "Asia/Tokyo",
+    "label": "JST"
+  },
+  "defaultLanguage": "ja",
+  "sites": [
+    {
+      "hosts": [
+        "example.com",
+        "*.example.com"
+      ],
+      "brand": "Example Cloud"
+    }
+  ],
+  "copy": {
+    "ja": {
+      "label": "日本語",
+      "title": "メンテナンス中",
+      "status": "メンテナンス中",
+      "eyebrow": "Maintenance · 基盤更新工事",
+      "headline": "ただいま\nメンテナンス中です",
+      "body": "より安定して使えるよう、基盤の工事をしています。データは安全に保たれています。このページは自動で更新されます。",
+      "etaLabel": "終了予定（{tz}）",
+      "soon": "まもなく",
+      "left": "残り時間",
+      "services": "この基盤を支えるサービス",
+      "hint": "ドラッグで回転・スクロールで拡大"
+    },
+    "en": {
+      "label": "English",
+      "title": "Under maintenance",
+      "status": "Maintenance",
+      "eyebrow": "Scheduled maintenance",
+      "headline": "We are under\nmaintenance",
+      "body": "We are upgrading the platform underneath. Your data is safe. This page refreshes by itself.",
+      "etaLabel": "Expected back ({tz})",
+      "soon": "Shortly",
+      "left": "Time remaining",
+      "services": "Services running this platform",
+      "hint": "Drag to orbit · scroll to zoom"
+    },
+    "zh": {
+      "label": "简体中文",
+      "title": "维护中",
+      "status": "维护中",
+      "eyebrow": "计划维护 · 基础设施升级",
+      "headline": "系统维护中",
+      "body": "我们正在升级底层平台，您的数据是安全的。本页面会自动刷新。",
+      "etaLabel": "预计恢复（{tz}）",
+      "soon": "稍后",
+      "left": "剩余时间",
+      "services": "支撑本平台的服务",
+      "hint": "拖动旋转 · 滚轮缩放"
+    },
+    "zh-TW": {
+      "label": "繁體中文",
+      "title": "維護中",
+      "status": "維護中",
+      "eyebrow": "計畫維護 · 基礎設施升級",
+      "headline": "系統維護中",
+      "body": "我們正在升級底層平台，您的資料是安全的。本頁面會自動重新整理。",
+      "etaLabel": "預計恢復（{tz}）",
+      "soon": "稍後",
+      "left": "剩餘時間",
+      "services": "支撐本平台的服務",
+      "hint": "拖曳旋轉 · 滾輪縮放"
+    },
+    "ko": {
+      "label": "한국어",
+      "title": "점검 중",
+      "status": "점검 중",
+      "eyebrow": "정기 점검 · 인프라 업그레이드",
+      "headline": "지금은\n점검 중입니다",
+      "body": "더 안정적인 서비스를 위해 기반 시스템을 업그레이드하고 있습니다. 데이터는 안전하게 보관되어 있습니다. 이 페이지는 자동으로 새로 고쳐집니다.",
+      "etaLabel": "종료 예정 ({tz})",
+      "soon": "곧",
+      "left": "남은 시간",
+      "services": "이 플랫폼을 지탱하는 서비스",
+      "hint": "드래그로 회전 · 스크롤로 확대"
+    },
+    "es": {
+      "label": "Español",
+      "title": "En mantenimiento",
+      "status": "Mantenimiento",
+      "eyebrow": "Mantenimiento programado",
+      "headline": "Estamos en\nmantenimiento",
+      "body": "Estamos actualizando la plataforma. Tus datos están a salvo. Esta página se actualiza sola.",
+      "etaLabel": "Vuelta prevista ({tz})",
+      "soon": "En breve",
+      "left": "Tiempo restante",
+      "services": "Servicios de esta plataforma",
+      "hint": "Arrastra para girar · rueda para acercar"
+    },
+    "fr": {
+      "label": "Français",
+      "title": "Maintenance en cours",
+      "status": "Maintenance",
+      "eyebrow": "Maintenance planifiée",
+      "headline": "Maintenance\nen cours",
+      "body": "Nous mettons à niveau la plateforme. Vos données sont en sécurité. Cette page se rafraîchit toute seule.",
+      "etaLabel": "Retour prévu ({tz})",
+      "soon": "Bientôt",
+      "left": "Temps restant",
+      "services": "Services de cette plateforme",
+      "hint": "Glisser pour pivoter · molette pour zoomer"
+    },
+    "de": {
+      "label": "Deutsch",
+      "title": "Wartungsarbeiten",
+      "status": "Wartung",
+      "eyebrow": "Geplante Wartung",
+      "headline": "Wir führen gerade\nWartungsarbeiten durch",
+      "body": "Wir aktualisieren die Plattform. Ihre Daten sind sicher. Diese Seite aktualisiert sich von selbst.",
+      "etaLabel": "Voraussichtlich zurück ({tz})",
+      "soon": "In Kürze",
+      "left": "Verbleibende Zeit",
+      "services": "Dienste dieser Plattform",
+      "hint": "Ziehen zum Drehen · Mausrad zum Zoomen"
+    }
+  },
+  "notice": {
+    "title": "工事のお知らせ",
+    "subject": "{brand} 基盤更新工事",
+    "lines": [
+      "ただいまシステムの保守作業を",
+      "行っております。",
+      "ご迷惑をおかけしますが、",
+      "ご理解とご協力を",
+      "お願いいたします。"
+    ],
+    "eta": "作業終了予定　{end}",
+    "etaUnknown": "作業終了予定　まもなく",
+    "owner": "発注者　{brand}",
+    "site": "{brand} 作業所",
+    "address": "本町 3-2"
+  },
+  "services": [
+    {
+      "icon": "cloudflare",
+      "name": "Cloudflare"
+    },
+    {
+      "icon": "kubernetes",
+      "name": "Kubernetes"
+    },
+    {
+      "icon": "ubuntu",
+      "name": "Ubuntu"
+    },
+    {
+      "icon": "argo",
+      "name": "Argo CD"
+    },
+    {
+      "icon": "postgresql",
+      "name": "PostgreSQL"
+    },
+    {
+      "icon": "redis",
+      "name": "Redis"
+    },
+    {
+      "icon": "prometheus",
+      "name": "Prometheus"
+    },
+    {
+      "icon": "nextdotjs",
+      "name": "Next.js"
+    }
+  ]
+}
