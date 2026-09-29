@@ -1,19 +1,22 @@
 // Maintenance gate (Cloudflare Worker).
 //
-// Deployed on the public hostnames' routes only while maintenance is on:
-// every request gets the full-screen maintenance page (503 + Retry-After),
-// whatever state the origin is in -- the page is served from the edge, so it
-// stays up while servers, the gateway or the tunnel are down. Removing the
-// Worker (wrangler delete) ends maintenance.
+// The Worker stays deployed on the public hostnames' routes. The MAINTENANCE
+// variable is the switch: "on" serves the full-screen maintenance page (503 +
+// Retry-After) to every request, whatever state the origin is in -- the page
+// comes from the edge, so it stays up while servers, the gateway or the tunnel
+// are down. Anything else (including unset) passes every request through to
+// the origin untouched. Flip it in the Cloudflare dashboard or with
+// `npm run on` / `npm run off`.
 //
 // Hosts listed in passHosts (for example operator consoles behind an access
-// proxy, or machine endpoints) are passed through to the origin.
+// proxy, or machine endpoints) are passed through even while maintenance is on.
 import CONFIG from "../dist/config.json";
 import SCENE from "../dist/scene.bundle.txt";
 import type { Config } from "./config";
 import { renderPage } from "./render";
 
 export interface Env {
+  MAINTENANCE?: string; // "on" serves the maintenance page; anything else passes through
   MAINTENANCE_UNTIL?: string; // ISO time the window is expected to end
 }
 
@@ -22,6 +25,7 @@ const SCENE_PATH = "/__maintenance/scene.js";
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
+    if ((env.MAINTENANCE || "").trim().toLowerCase() !== "on") return fetch(req);
     const url = new URL(req.url);
     const host = url.hostname.toLowerCase();
     if (config.passHosts.map((h) => h.toLowerCase()).includes(host)) return fetch(req);

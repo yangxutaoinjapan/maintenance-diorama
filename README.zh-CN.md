@@ -6,10 +6,13 @@
 微缩模型：雨夜里日本街角的施工现场。四周像电影画面一样叠加品牌名、实时时钟、
 预计恢复时间与倒计时，以及支撑你平台的服务图标。
 
-![截图](docs/screenshot.png)
+![四季轮转的微缩模型](docs/seasons.gif)
 
-- **从边缘提供。** 部署 Worker 后，配置里的所有域名都进入维护状态（HTTP 503 并带
-  `Retry-After`）；删除 Worker 即结束维护。源站、网关或隧道宕机时页面照常显示。
+![完整页面](docs/screenshot.png)
+
+- **从边缘提供，一个变量切换。** Worker 常驻在路由上：`MAINTENANCE=on` 时配置里的
+  所有域名都显示维护页（HTTP 503 并带 `Retry-After`），否则请求原样转发到源站。
+  在 Cloudflare 面板上几秒即可切换。源站、网关或隧道宕机时页面照常显示。
 - **一个配置文件。** 域名、品牌、语言、结束时间、时区和服务图标都写在
   `maintenance.config.json` 里。
 - **多语言。** 内置日语、英语、简体中文、繁体中文、韩语、西班牙语、法语、德语；
@@ -28,14 +31,31 @@ npm ci
 cp maintenance.config.example.json maintenance.config.json   # 然后编辑
 npm run build && npm run preview    # 用浏览器打开 dist/preview.html
 npx wrangler login
-npm run deploy                      # 所有配置的路由进入维护
-npm run end                         # 结束维护（删除 Worker）
+npm run off                         # 安装 Worker，流量原样放行
+npm run on                          # 所有配置的路由进入维护
+npm run off                         # 结束维护
 ```
+
+## 开启和结束维护
+
+开关是 Worker 变量 `MAINTENANCE`：`on` 显示维护页，其他值（包括未设置）一律原样
+放行。
+
+- **面板：** Workers & Pages → 你的 Worker → Settings → Variables and Secrets →
+  把 `MAINTENANCE` 设为 `on` 或 `off` → Deploy。几秒内生效，不需要终端。
+- **命令行：** `npm run on` / `npm run off`。
+
+生成的 `wrangler.toml` 带有 `keep_vars = true`，所以改完配置后执行
+`npm run deploy` 也会保留面板上的开关状态。`npm run remove` 会删除 Worker 及其路由。
+
+Worker 常驻在路由上，所以即使维护关闭，发往这些域名的每个请求也都会经过它，占用
+Workers 的请求额度（免费版每天 10 万次）。放行时的 CPU 耗时不到 1 毫秒。如果接近
+额度，在面板上把路由的失败模式设为 *fail open*，超额的请求就会直接到达源站。
 
 `maintenance.config.json` 不纳入 Git。想放在别处，用 `MAINTENANCE_CONFIG` 指定：
 
 ```bash
-MAINTENANCE_CONFIG=../ops/maintenance.config.json npm run deploy
+MAINTENANCE_CONFIG=../ops/maintenance.config.json npm run on
 ```
 
 `wrangler.toml` 由 `npm run build` 根据配置生成，请修改配置而不是生成的文件。
@@ -45,7 +65,7 @@ MAINTENANCE_CONFIG=../ops/maintenance.config.json npm run deploy
 | 键 | 含义 |
 |---|---|
 | `worker.name` | Worker 脚本名 |
-| `routes` | `[{ pattern, zone }]`，部署即开启维护的路由 |
+| `routes` | `[{ pattern, zone }]`，开关覆盖的 Worker 路由 |
 | `passHosts` | 不显示维护页、直接放行的域名（例如受访问控制保护的管理后台） |
 | `until` | 预计结束时间（ISO 8601，UTC），用于倒计时和 `Retry-After` |
 | `timeZone` | `{ id, label }`，例如 `{ "id": "Asia/Tokyo", "label": "JST" }` |

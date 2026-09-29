@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
-    "end": "npm run configure && wrangler delete"
+    "on": "npm run build && wrangler deploy --var MAINTENANCE:on",
+    "off": "npm run build && wrangler deploy --var MAINTENANCE:off",
+    "remove": "npm run configure && wrangler delete"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260921.0",

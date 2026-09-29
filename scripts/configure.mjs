@@ -2,6 +2,10 @@
 //   dist/config.json  page text, sites, pass-through hosts, resolved service icons
 //   wrangler.toml     Worker name, routes and MAINTENANCE_UNTIL (generated; not committed)
 //
+// The on/off switch, the MAINTENANCE variable, is deliberately not written here:
+// keep_vars leaves the value set in the dashboard (or by `npm run on|off`)
+// in place across deploys.
+//
 // Config path: $MAINTENANCE_CONFIG, else ./maintenance.config.json, else the example.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -45,8 +49,9 @@ name = ${q(cfg.worker.name)}
 main = "src/index.ts"
 compatibility_date = ${q(cfg.worker.compatibilityDate || "2026-09-01")}
 rules = [{ type = "Text", globs = ["**/*.html", "**/*.txt"], fallthrough = false }]
+keep_vars = true
 
-# Deploying these routes turns maintenance ON; \`npx wrangler delete\` turns it OFF.
+# The Worker stays on these routes. MAINTENANCE=on shows the page; anything else passes through.
 routes = [
 ${cfg.routes.map((r) => `  { pattern = ${q(r.pattern)}, zone_name = ${q(r.zone)} },`).join("\n")}
 ]

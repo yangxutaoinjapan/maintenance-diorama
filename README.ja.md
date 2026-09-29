@@ -7,11 +7,15 @@ Cloudflare Worker で配信する、映画のワンシーンのようなメン�
 ブランド名、現在時刻、終了予定とカウントダウン、そして基盤を支えるサービスの
 アイコンを重ねて表示します。
 
-![スクリーンショット](docs/screenshot.png)
+![四季をめぐるジオラマ](docs/seasons.gif)
 
-- **エッジから配信。** Worker をデプロイすると設定したすべてのホストがメンテナンス
-  表示（HTTP 503 と `Retry-After`）になり、削除すると元に戻ります。オリジンや
-  ゲートウェイ、トンネルが止まっていても表示されます。
+![ページ全体](docs/screenshot.png)
+
+- **エッジから配信、切り替えは変数ひとつ。** Worker はルートに常駐し、
+  `MAINTENANCE=on` のときだけ設定したすべてのホストがメンテナンス表示（HTTP 503
+  と `Retry-After`）になります。それ以外はリクエストをそのままオリジンへ通します。
+  Cloudflare のダッシュボードから数秒で切り替えられ、オリジンやゲートウェイ、
+  トンネルが止まっていても表示されます。
 - **設定ファイルひとつ。** ホスト名、ブランド、言語、終了予定、タイムゾーン、
   サービスアイコンはすべて `maintenance.config.json` に書きます。
 - **多言語対応。** 日本語、英語、簡体字・繁体字中国語、韓国語、スペイン語、
@@ -33,15 +37,36 @@ npm ci
 cp maintenance.config.example.json maintenance.config.json   # 編集する
 npm run build && npm run preview    # dist/preview.html をブラウザで開く
 npx wrangler login
-npm run deploy                      # 設定したルートすべてでメンテナンス開始
-npm run end                         # メンテナンス終了（Worker を削除）
+npm run off                         # Worker を設置（トラフィックは素通し）
+npm run on                          # 設定したルートすべてでメンテナンス開始
+npm run off                         # メンテナンス終了
 ```
+
+## メンテナンスの開始と終了
+
+切り替えは Worker 変数 `MAINTENANCE` です。`on` でページを表示し、それ以外
+（未設定を含む）ではすべてのリクエストをそのまま通します。
+
+- **ダッシュボード：** Workers & Pages → 対象の Worker → Settings → Variables and
+  Secrets → `MAINTENANCE` を `on` または `off` に → Deploy。数秒で反映され、
+  ターミナルは要りません。
+- **CLI：** `npm run on` / `npm run off`。
+
+生成される `wrangler.toml` は `keep_vars = true` なので、設定を編集したあとの
+`npm run deploy` でもダッシュボードの状態はそのまま残ります。`npm run remove`
+で Worker とルートを削除します。
+
+Worker はルートに常駐するため、メンテナンスが off のときも対象ホストへの
+リクエストはすべて Worker を通り、Workers のリクエスト枠（Free プランは 1 日
+10 万件）を消費します。素通しの CPU 時間は 1 ミリ秒未満です。枠に近い場合は、
+ダッシュボードでルートの失敗時動作を *fail open* にしておくと、上限を超えた
+リクエストはオリジンへ直接届きます。
 
 `maintenance.config.json` は Git の管理対象外です。別の場所に置く場合は
 `MAINTENANCE_CONFIG` で指定します。
 
 ```bash
-MAINTENANCE_CONFIG=../ops/maintenance.config.json npm run deploy
+MAINTENANCE_CONFIG=../ops/maintenance.config.json npm run on
 ```
 
 `wrangler.toml` は `npm run build` が設定から生成します。生成物ではなく設定を
@@ -52,7 +77,7 @@ MAINTENANCE_CONFIG=../ops/maintenance.config.json npm run deploy
 | キー | 内容 |
 |---|---|
 | `worker.name` | Worker のスクリプト名 |
-| `routes` | `[{ pattern, zone }]`。デプロイするとメンテナンスが始まるルート |
+| `routes` | `[{ pattern, zone }]`。切り替えの対象になる Worker ルート |
 | `passHosts` | メンテナンス表示を通さないホスト（アクセス制御付きの管理画面など） |
 | `until` | 終了予定（ISO 8601, UTC）。カウントダウンと `Retry-After` に使います |
 | `timeZone` | `{ id, label }`。例：`{ "id": "Asia/Tokyo", "label": "JST" }` |
